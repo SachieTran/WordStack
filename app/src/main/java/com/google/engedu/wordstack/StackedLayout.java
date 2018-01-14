@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 public class StackedLayout extends LinearLayout {
@@ -34,40 +35,24 @@ public class StackedLayout extends LinearLayout {
     }
 
     public void push(View tile) {
-        /**
-         **
-         **  YOUR CODE GOES HERE
-         **
-         **/
-        if (!tiles.empty()){
+
+        if (!tiles.empty()) {
             View top = tiles.peek();
-            LinearLayout parent = (LinearLayout) top.getParent();
-
-            parent.removeView(top);
-            tiles.push(tile);
-
-            top = tiles.peek();
-            LinearLayout newParent = (LinearLayout) top.getParent();
-            newParent.addView(top);
-
+            removeView(top);
         }
+        tiles.push(tile);
+        addView(tile);
+
     }
 
     public View pop() {
 
-        /**
-         **
-         **  YOUR CODE GOES HERE
-         **
-         **/
+
         View popped = tiles.pop();
-        LinearLayout parent = (LinearLayout) popped.getParent();
-
-        parent.removeView(popped);
-
-        View pop = tiles.peek();
-        LinearLayout newParent = (LinearLayout) pop.getParent();
-        newParent.addView(pop);
+        removeView(popped);
+        try {
+            addView(tiles.peek());
+        } catch (EmptyStackException e) {}
         return popped;
     }
 
@@ -80,13 +65,10 @@ public class StackedLayout extends LinearLayout {
     }
 
     public void clear() {
-        /**
-         **
-         **  YOUR CODE GOES HERE
-         **
-         **/
-        while (!tiles.empty()) {
-            tiles.pop();
+
+        if (!tiles.empty()) {
+            removeView(tiles.peek());
         }
+        tiles.clear();
     }
 }

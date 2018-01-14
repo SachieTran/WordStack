@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.Random;
 import java.util.Stack;
 
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> words = new ArrayList<>();
     private Random random = new Random();
     private StackedLayout stackedLayout;
+    private Stack<LetterTile> placedTiles;
     private String word1, word2;
 
     @Override
@@ -57,11 +59,7 @@ public class MainActivity extends AppCompatActivity {
             String line = null;
             while((line = in.readLine()) != null) {
                 String word = line.trim();
-                /**
-                 **
-                 **  YOUR CODE GOES HERE
-                 **
-                 **/
+
                 if (word.length() == WORD_LENGTH) {
                     //add to list
                     words.add(word);
@@ -77,11 +75,11 @@ public class MainActivity extends AppCompatActivity {
         verticalLayout.addView(stackedLayout, 3);
 
         View word1LinearLayout = findViewById(R.id.word1);
-        word1LinearLayout.setOnTouchListener(new TouchListener());
-        //word1LinearLayout.setOnDragListener(new DragListener());
+        //word1LinearLayout.setOnTouchListener(new TouchListener());
+        word1LinearLayout.setOnDragListener(new DragListener());
         View word2LinearLayout = findViewById(R.id.word2);
-        word2LinearLayout.setOnTouchListener(new TouchListener());
-        //word2LinearLayout.setOnDragListener(new DragListener());
+        //word2LinearLayout.setOnTouchListener(new TouchListener());
+        word2LinearLayout.setOnDragListener(new DragListener());
     }
 
     private class TouchListener implements View.OnTouchListener {
@@ -100,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                  **  YOUR CODE GOES HERE
                  **
                  **/
-
+                placedTiles.push(tile);
                 return true;
             }
             return false;
@@ -141,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                      **  YOUR CODE GOES HERE
                      **
                      **/
+                    placedTiles.push(tile);
                     return true;
             }
             return false;
@@ -155,15 +154,50 @@ public class MainActivity extends AppCompatActivity {
          **  YOUR CODE GOES HERE
          **
          **/
+        ViewGroup word1LinearLayout = (ViewGroup)findViewById(R.id.word1);
+        ViewGroup word2LinearLayout = (ViewGroup)findViewById(R.id.word2);
+
+        word1LinearLayout.removeAllViews();
+        word2LinearLayout.removeAllViews();
+        try {
+            stackedLayout.clear();
+        } catch(EmptyStackException e){}
+
+
+        int index1 = random.nextInt(words.size());
+        int index2;
+        do {
+            index2 = random.nextInt(words.size());
+        }while(index2 == index1);
+
+        word1 = words.get(index1);
+        word2 = words.get(index2);
+
+        String word3 = "";
+        int word1Count = 0;
+        int word2Count = 0;
+        while(word1Count < WORD_LENGTH || word2Count < WORD_LENGTH){
+            if(random.nextInt(2) == 1 && word1Count < WORD_LENGTH) {
+                word3 += word1.charAt(word1Count);
+                word1Count++;
+            }
+            else if (word2Count < WORD_LENGTH) {
+                word3 += word2.charAt(word2Count);
+                word2Count++;
+            }
+
+        }
+
+        for(int i = word3.length()-1; i >= 0; --i){
+            stackedLayout.push(new LetterTile(this, word3.charAt(i)));
+        }
+
         return true;
     }
 
     public boolean onUndo(View view) {
-        /**
-         **
-         **  YOUR CODE GOES HERE
-         **
-         **/
+        LetterTile tile = placedTiles.pop();
+        tile.moveToViewGroup((ViewGroup) view);
         return true;
     }
 }
