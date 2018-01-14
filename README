@@ -1,8 +1,24 @@
-This is the starter code for the WordStack workshop. 
-This workshop is part of the Applied CS with Android course:
+This is the implementation for the WordStack Android app. 
 
 http://g.co/cswithandroid
 
-Check the website for detailed instructions on how to implement this activity.
+The app is a single-user word game called WordStack. The idea of the game is to try to separate out two words of the same length whose letters have been scrambled (but the order of the letters has been preserved).
 
-Version 1.0
+The code is broken up into three classes, containing:
+
+- MainActivity which is at the heart of this app. It handles both initializing the app and responding to user input.
+onCreate loads up the dictionary and finishes creating the UI.
+
+*TouchListener.onTouch moves the top tile to either of the white areas when the user touches the area.
+*DragListener.onDrag handles dragging the tiles around the screen.
+*onStartGame and onUndo: handler for the on-screen buttons.
+
+- StackedLayout: The Android SDK contains several ViewGroup classes which are used to organize UI items. Some of the most common are LinearLayout to line up the items horizontally or vertically and RelativeLayout that allows items to be placed relative to each other. For this game, we will subclass LinearLayout to make a special layout that only shows the last View added to it. We will use this to represent the stack of tiles.
+*push, pop: will need to implement
+*peek, empty: are simple wrappers around Java's Stack
+*clear: will remove all tiles from the ViewGroup
+
+- LetterTile: A subclass of the TextView class that draws a single letter in the appropriate size and colors. 
+moveToViewGroup: Move the current tile to a different ViewGroup. Removes the current tile from whatever ViewGroup it is currently in and adds it to the other specified ViewGroup. Returns true if that moves concludes the game.
+freeze, unfreeze: Will be used to keep a tile from being moved after it is placed.
+onTouchEvent: Handles the tile being touched by the user. 
